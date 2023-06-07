@@ -1,0 +1,5 @@
+{
+    "APIGatewayURL": {
+        "Dev": "https://gkpfu3uloh.execute-api.us-east-1.amazonaws.com/dev"
+    }
+}
