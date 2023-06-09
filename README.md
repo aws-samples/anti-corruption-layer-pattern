@@ -20,8 +20,10 @@ When **Program.cs** calls the User service (**UserInMonolith.cs**) inside the mo
 
 - An [AWS](https://signin.aws.amazon.com/signin?redirect_uri=https%3A%2F%2Fportal.aws.amazon.com%2Fbilling%2Fsignup%2Fresume&client_id=signup) account
 - An AWS user with AdministratorAccess (see the [instructions](https://console.aws.amazon.com/iam/home#/roles%24new?step=review&commonUseCase=EC2%2BEC2&selectedUseCase=EC2&policies=arn:aws:iam::aws:policy%2FAdministratorAccess) on the [AWS Identity and Access Management](http://aws.amazon.com/iam) (IAM) console)
-- Access to the following AWS services: Amazon API Gateway, [AWS Lambda](https://aws.amazon.com/lambda/), and [Amazon DynamoDB](https://aws.amazon.com/dynamodb/)
-- [.NET 6.0](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) SDK installed
+- An [AWS CDK](https://docs.aws.amazon.com/cdk/v2/guide/cli.html) for execute your app. For installing AWS CDK there is a requirement to install [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) first with Node.js version `^18.0.0`. [Supply your AWS credentials](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-credentials-node.html), for example, you can keep your AWS credentials data in a [shared file](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-shared.html)
+- Access to the following AWS services: [Amazon API Gateway](https://aws.amazon.com/api-gateway/), [AWS Lambda](https://aws.amazon.com/lambda/), and [Amazon DynamoDB](https://aws.amazon.com/dynamodb/)
+- [.NET 6.0](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) SDK installed and [.NET Core Global Tools for AWS](https://aws.amazon.com/blogs/developer/net-core-global-tools-for-aws/)
+- A zip archiver tool
 - [JetBrains Rider](https://www.jetbrains.com/rider/) or [Microsoft Visual Studio](https://visualstudio.microsoft.com/) 2017 or later (or [Visual Studio Code](https://code.visualstudio.com/))
 
 ## Implementation
@@ -45,7 +47,9 @@ The Lambda functions in the user-microservice-lambda directory must be packaged 
 ```sh
 $ cd anti-corruption-layer
 $ cd user-microservice-lambda/src/UserMicroserviceLambda
+$ dotnet tool install --global Amazon.Lambda.Tools
 $ dotnet lambda package
+$ mkdir -p ../../../cdk-user-microservice/lambdas # create lambdas folder if there is no lambdas folder
 $ cp bin/Release/net6.0/UserMicroserviceLambda.zip ../../../cdk-user-microservice/lambdas
 $ cd ../../..
 ```
@@ -78,7 +82,7 @@ Note the API Endpoint URL from the Outputs:
 $ cd ..
 $ cd anti-corruption-layer-impl && dotnet build
 $ cd ../..
-$ curl -X POST https://<update-this>.execute-api.us-east-1.amazonaws.com/dev/user -H "Content-Type: application/json" -d '{"UserId": 12345, "Address": "475 Sansome St,10th floor","City": "San Francisco","State": "California","ZipCode": 94111,"Country": "United States"}'
+$ curl -X POST https://<update-this>.execute-api.<update-this-region>.amazonaws.com/dev/user -H "Content-Type: application/json" -d '{"UserId": 12345, "Address": "475 Sansome St,10th floor","City": "San Francisco","State": "California","ZipCode": 94111,"Country": "United States"}'
 ```
 
 You will get the following output if the call succeeds:
