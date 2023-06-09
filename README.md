@@ -20,7 +20,9 @@ When **Program.cs** calls the User service (**UserInMonolith.cs**) inside the mo
 
 - An [AWS](https://signin.aws.amazon.com/signin?redirect_uri=https%3A%2F%2Fportal.aws.amazon.com%2Fbilling%2Fsignup%2Fresume&client_id=signup) account
 - An AWS user with AdministratorAccess (see the [instructions](https://console.aws.amazon.com/iam/home#/roles%24new?step=review&commonUseCase=EC2%2BEC2&selectedUseCase=EC2&policies=arn:aws:iam::aws:policy%2FAdministratorAccess) on the [AWS Identity and Access Management](http://aws.amazon.com/iam) (IAM) console)
-- An [AWS CDK](https://docs.aws.amazon.com/cdk/v2/guide/cli.html) for execute your app. For installing AWS CDK there is a requirement to install [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) first with Node.js version `^18.0.0`. [Supply your AWS credentials](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-credentials-node.html), for example, you can keep your AWS credentials data in a [shared file](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-shared.html)
+- [Node.js](https://nodejs.org/en/download) `18.0.0` or later installed 
+- [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) installed
+- [AWS CDK v2](https://docs.aws.amazon.com/cdk/v2/guide/cli.html) installed 
 - Access to the following AWS services: [Amazon API Gateway](https://aws.amazon.com/api-gateway/), [AWS Lambda](https://aws.amazon.com/lambda/), and [Amazon DynamoDB](https://aws.amazon.com/dynamodb/)
 - [.NET 6.0](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) SDK installed and [.NET Core Global Tools for AWS](https://aws.amazon.com/blogs/developer/net-core-global-tools-for-aws/)
 - A zip archiver tool
