@@ -19,15 +19,42 @@ namespace CdkUserMicroservice
                 RoleName = "MicroserviceLambdaExecutionRole",
                 AssumedBy = new ServicePrincipal("lambda.amazonaws.com")
             });
-            iamLambdaRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("CloudWatchLogsFullAccess"));
-            iamLambdaRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AWSXrayFullAccess"));
+
+            // Scoped CloudWatch Logs permissions - least privilege
+            iamLambdaRole.AddToPolicy(new PolicyStatement(new PolicyStatementProps
+            {
+                Effect = Effect.ALLOW,
+                Actions = new []
+                {
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                },
+                Resources = new []
+                {
+                    $"arn:aws:logs:{this.Region}:{this.Account}:log-group:/aws/lambda/UserMicroserviceLambda:*"
+                }
+            }));
+
+            // Scoped X-Ray permissions - least privilege
+            iamLambdaRole.AddToPolicy(new PolicyStatement(new PolicyStatementProps
+            {
+                Effect = Effect.ALLOW,
+                Actions = new []
+                {
+                    "xray:PutTraceSegments",
+                    "xray:PutTelemetryRecords"
+                },
+                Resources = new [] {"*"} // X-Ray does not support resource-level permissions
+            }));
+
             iamLambdaRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("CloudWatchLambdaInsightsExecutionRolePolicy"));
-            
+
             iamLambdaRole.AddToPolicy(new PolicyStatement(new PolicyStatementProps
             {
                 Effect = Effect.ALLOW,
                 Actions = new [] {"cloudwatch:PutMetricData"},
-                Resources = new [] {"*"}
+                Resources = new [] {"*"} // CloudWatch metrics do not support resource-level permissions
             }));
 
             var iamApiGatewayRole = new Role(this, "apiRole", new RoleProps
@@ -35,25 +62,27 @@ namespace CdkUserMicroservice
                 RoleName = "apiRole",
                 AssumedBy = new ServicePrincipal("apigateway.amazonaws.com")
             });
-            iamApiGatewayRole.AddToPolicy(new PolicyStatement(new PolicyStatementProps
-            {
-                Effect = Effect.ALLOW,
-                Actions = new []{"lambda:InvokeFunction"},
-                Resources = new []{"*"}
-            }));
             #endregion iamroles
             
             #region LambdaFunctions
             var userMicroServiceLambda = new Function(this,"UserMicroserviceLambda", new FunctionProps
             {
                 FunctionName = "UserMicroserviceLambda",
-                Runtime = Runtime.DOTNET_6,
+                Runtime = Runtime.DOTNET_8,
                 Handler = "UserMicroserviceLambda::UserMicroserviceLambda.UserMicroservice::FunctionHandler",
                 Role = iamLambdaRole,
                 Code = Code.FromAsset("lambdas/UserMicroserviceLambda.zip"),
                 Timeout = Duration.Seconds(300),
                 Tracing = Tracing.ACTIVE
             });
+
+            // Scoped API Gateway role permissions - least privilege
+            iamApiGatewayRole.AddToPolicy(new PolicyStatement(new PolicyStatementProps
+            {
+                Effect = Effect.ALLOW,
+                Actions = new []{"lambda:InvokeFunction"},
+                Resources = new []{userMicroServiceLambda.FunctionArn}
+            }));
             #endregion
             
             #region API Gateway

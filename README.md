@@ -19,22 +19,22 @@ When **Program.cs** calls the User service (**UserInMonolith.cs**) inside the mo
 ### Prerequisites:
 
 - An [AWS](https://signin.aws.amazon.com/signin?redirect_uri=https%3A%2F%2Fportal.aws.amazon.com%2Fbilling%2Fsignup%2Fresume&client_id=signup) account
-- An AWS user with AdministratorAccess (see the [instructions](https://console.aws.amazon.com/iam/home#/roles%24new?step=review&commonUseCase=EC2%2BEC2&selectedUseCase=EC2&policies=arn:aws:iam::aws:policy%2FAdministratorAccess) on the [AWS Identity and Access Management](http://aws.amazon.com/iam) (IAM) console)
+- An AWS user with appropriate IAM permissions (minimum required: permissions to create and manage Lambda functions, API Gateway, DynamoDB, IAM roles, and CloudWatch Logs). For development/testing, you may use AdministratorAccess, but follow the principle of least privilege for production environments
 - [Node.js](https://nodejs.org/en/download) `18.0.0` or later installed 
 - [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) installed
 - [AWS CDK v2](https://docs.aws.amazon.com/cdk/v2/guide/cli.html) installed 
 - Access to the following AWS services: [Amazon API Gateway](https://aws.amazon.com/api-gateway/), [AWS Lambda](https://aws.amazon.com/lambda/), and [Amazon DynamoDB](https://aws.amazon.com/dynamodb/)
-- [.NET 6.0](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) SDK installed and [.NET Core Global Tools for AWS](https://aws.amazon.com/blogs/developer/net-core-global-tools-for-aws/)
+- [.NET 8.0 or .NET 10.0](https://dotnet.microsoft.com/en-us/download) SDK installed and [.NET Core Global Tools for AWS](https://aws.amazon.com/blogs/developer/net-core-global-tools-for-aws/)
 - A zip archiver tool
-- [JetBrains Rider](https://www.jetbrains.com/rider/) or [Microsoft Visual Studio](https://visualstudio.microsoft.com/) 2017 or later (or [Visual Studio Code](https://code.visualstudio.com/))
+- [JetBrains Rider](https://www.jetbrains.com/rider/) or [Microsoft Visual Studio](https://visualstudio.microsoft.com/) 2022 or later (or [Visual Studio Code](https://code.visualstudio.com/))
 
 ## Implementation
 
-There are three repos in this example. 
+There are three directories in this example: 
 
-- [ ] anti-corruption-layer-impl - Contains the source code for the .NET 6.0 monolithic application and this contains the implementation of the Anti-corruption layer.
+- [ ] anti-corruption-layer-impl - Contains the source code for the .NET 10.0 monolithic application and this contains the implementation of the Anti-corruption layer.
 - [ ] cdk-user-microservice - CDK implementation for the AWS services
-- [ ] user-microservice-lambda - Source code for Lambda function
+- [ ] user-microservice-lambda - Source code for Lambda function (targeting .NET 8.0 for AWS Lambda compatibility)
 
 ### Step 1: Download the application
 
@@ -47,12 +47,12 @@ git clone https://github.com/aws-samples/anti-corruption-layer-pattern.git
 The Lambda functions in the user-microservice-lambda directory must be packaged and copied to the cdk-user-microservice\lambdas directory before deployment. Run these commands to process the UserMicroserviceLambda function:
 
 ```sh
-$ cd anti-corruption-layer
+$ cd anti-corruption-layer-pattern
 $ cd user-microservice-lambda/src/UserMicroserviceLambda
 $ dotnet tool install --global Amazon.Lambda.Tools
 $ dotnet lambda package
 $ mkdir -p ../../../cdk-user-microservice/lambdas # create lambdas folder if there is no lambdas folder
-$ cp bin/Release/net6.0/UserMicroserviceLambda.zip ../../../cdk-user-microservice/lambdas
+$ cp bin/Release/net8.0/UserMicroserviceLambda.zip ../../../cdk-user-microservice/lambdas
 $ cd ../../..
 ```
 
